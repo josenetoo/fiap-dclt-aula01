@@ -456,14 +456,14 @@ aws eks update-kubeconfig \
   --profile fiapaws
 
 # 4. Criar Node Group
-# Reutilizar as mesmas subnets descobertas
-SUBNETS_SPACE=$(echo $SUBNETS | tr ',' ' ')
+# Converter subnets para array
+SUBNET_ARRAY=(${SUBNETS//,/ })
 
 aws eks create-nodegroup \
   --cluster-name cicd-lab \
   --nodegroup-name workers \
   --node-role arn:aws:iam::${ACCOUNT_ID}:role/LabRole \
-  --subnets $SUBNETS_SPACE \
+  --subnets ${SUBNET_ARRAY[@]} \
   --instance-types t3.medium \
   --scaling-config minSize=2,maxSize=2,desiredSize=2 \
   --region us-east-1 \
@@ -521,13 +521,13 @@ aws eks update-kubeconfig `
   --profile fiapaws
 
 # 4. Criar Node Group
-$SUBNETS_SPACE = $SUBNETS_RAW -replace "\t", " "
+$SUBNET_ARRAY = $SUBNETS_RAW -split "\t"
 
 aws eks create-nodegroup `
   --cluster-name cicd-lab `
   --nodegroup-name workers `
   --node-role "arn:aws:iam::${ACCOUNT_ID}:role/LabRole" `
-  --subnets $SUBNETS_SPACE `
+  --subnets $SUBNET_ARRAY `
   --instance-types t3.medium `
   --scaling-config minSize=2,maxSize=2,desiredSize=2 `
   --region us-east-1 `
